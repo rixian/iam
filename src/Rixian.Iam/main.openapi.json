@@ -1,0 +1,201 @@
+﻿{
+  "swagger": "2.0",
+  "info": {
+    "version": "1.0",
+    "title": "Rixian IAM",
+    "description": "This OAS2 (Swagger 2) file represents a real API that lives at http://todos.stoplight.io.\n\nFor authentication information, click the apikey security scheme in the editor sidebar.",
+    "contact": {
+      "name": "Stoplight",
+      "url": "https://stoplight.io"
+    },
+    "license": {
+      "name": "Apache 2.0"
+    }
+  },
+  "host": "iam.rixian.io",
+  "schemes": [
+    "https"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "securityDefinitions": {},
+  "paths": {
+    "/tenants": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/tenant"
+              }
+            }
+          }
+        },
+        "summary": "List Tenants",
+        "operationId": "list-tenants",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "userId",
+            "type": "string"
+          }
+        ]
+      },
+      "post": {
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/tenant"
+            }
+          }
+        },
+        "summary": "Create Tenant",
+        "operationId": "create-tenant",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "$ref": "#/definitions/create-tenant-request"
+            }
+          }
+        ]
+      }
+    },
+    "/tenants/{tenantId}": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/tenant"
+            }
+          }
+        },
+        "summary": "Get Tenant",
+        "operationId": "get-tenant"
+      },
+      "parameters": [
+        {
+          "name": "tenantId",
+          "in": "path",
+          "type": "string",
+          "format": "uuid",
+          "required": true
+        }
+      ]
+    },
+    "/accounts": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          }
+        },
+        "summary": "List Accounts",
+        "operationId": "list-accounts"
+      }
+    },
+    "/tenants/{tenantId}/checkMemberUsers": {
+      "post": {
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/check-member-users-response"
+            }
+          }
+        },
+        "summary": "Check Member Users",
+        "operationId": "check-member-users",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/check-member-users-request"
+            }
+          }
+        ]
+      },
+      "parameters": [
+        {
+          "name": "tenantId",
+          "in": "path",
+          "type": "string",
+          "format": "uuid",
+          "required": true
+        }
+      ]
+    }
+  },
+  "definitions": {
+    "tenant": {
+      "type": "object",
+      "title": "Tenant",
+      "properties": {
+        "tenantId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "tenantId",
+        "name"
+      ]
+    },
+    "create-tenant-request": {
+      "type": "object",
+      "title": "Create Tenant Request",
+      "properties": {
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "check-member-users-request": {
+      "type": "object",
+      "title": "Check Member Users Request",
+      "properties": {
+        "userIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "check-member-users-response": {
+      "type": "object",
+      "title": "Check Member Users Response",
+      "properties": {
+        "values": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Todos"
+    }
+  ]
+}
