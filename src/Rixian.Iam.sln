@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rixian.Iam", "Rixian.Iam\Ri
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rixian.Iam.Tests", "Rixian.Iam.Tests\Rixian.Iam.Tests.csproj", "{F56DEA88-6427-4A05-AF27-670953E6D814}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rixian.Iam.DependencyInjection", "Rixian.Iam.DependencyInjection\Rixian.Iam.DependencyInjection.csproj", "{C86274C8-8F8E-4C12-A507-23D131A6824F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rixian.Iam.DependencyInjection", "Rixian.Iam.DependencyInjection\Rixian.Iam.DependencyInjection.csproj", "{C86274C8-8F8E-4C12-A507-23D131A6824F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
