@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+option csharp_namespace = "Rixian.Iam";
+
+package iam;
+
+// The greeting service definition.
+service Main {
+  // Sends a greeting
+  rpc ListTenants (ListTenantsRequest) returns (stream Tenant);
+}
+
+// The request message containing the user's name.
+message ListTenantsRequest {
+  string subjectId = 1;
+}
+
+// The response message containing the greetings.
+message Tenant {
+  string tenantId = 1;
+  string name = 2;
+}
