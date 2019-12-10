@@ -5,6 +5,7 @@ namespace Rixian.Iam
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Net;
     using System.Net.Http;
     using System.Threading.Tasks;
@@ -155,27 +156,29 @@ namespace Rixian.Iam
             }
         }
 
-        /// <summary>Check Member Users.</summary>
+        /// <summary>
+        /// Checks if the given object is allowed access to the tenant.
+        /// </summary>
         /// <param name="iamClient">The IamClient to use.</param>
-        /// <param name="request">The request body with values to check for tenant access.</param>
-        /// <param name="tenantId">The tenant ID to check access.</param>
+        /// <param name="request">The object that requires a permission check.</param>
+        /// <param name="tenantId">The tenant id to check against.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>The raw HttpResponseMessage.</returns>
-        public static async Task<Result<CheckTenantAccessResponse>> CheckTenantAccessResultAsync(this IIamClient iamClient, CheckTenantAccessRequest request, Guid tenantId, System.Threading.CancellationToken cancellationToken = default)
+        public static async Task<Result<AclCheckResponse>> IsAllowedAccessToTenantResultAsync(this IIamClient iamClient, AclCheckRequest request, Guid tenantId, System.Threading.CancellationToken cancellationToken = default)
         {
             if (iamClient is null)
             {
                 throw new ArgumentNullException(nameof(iamClient));
             }
 
-            HttpResponseMessage response = await iamClient.CheckTenantAccessHttpResponseAsync(request, tenantId, cancellationToken).ConfigureAwait(false);
+            HttpResponseMessage response = await iamClient.IsAllowedAccessToTenantHttpResponseAsync(request, tenantId, cancellationToken).ConfigureAwait(false);
 
             using (response)
             {
                 switch (response.StatusCode)
                 {
                     case HttpStatusCode.OK:
-                        return await response.DeserializeJsonContentAsync<CheckTenantAccessResponse>().ConfigureAwait(false);
+                        return await response.DeserializeJsonContentAsync<AclCheckResponse>().ConfigureAwait(false);
                     case HttpStatusCode.NoContent:
                         return default;
                     case HttpStatusCode.BadRequest:
@@ -186,7 +189,117 @@ namespace Rixian.Iam
                         }
 
                     default:
-                        return await UnexpectedStatusCodeError.CreateAsync(response, $"{nameof(IIamClient)}.{nameof(CheckTenantAccessResultAsync)}").ConfigureAwait(false);
+                        return await UnexpectedStatusCodeError.CreateAsync(response, $"{nameof(IIamClient)}.{nameof(IsAllowedAccessToTenantResultAsync)}").ConfigureAwait(false);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Checks if the given subject is allowed access to the tenant.
+        /// </summary>
+        /// <param name="iamClient">The IamClient to use.</param>
+        /// <param name="tenantId">The tenant id to check against.</param>
+        /// <param name="subjectId">The subject that requires ACL checks permissions.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>The raw HttpResponseMessage.</returns>
+        public static async Task<Result<bool>> IsAllowedAccessToTenantResultAsync(this IIamClient iamClient, Guid tenantId, string subjectId, System.Threading.CancellationToken cancellationToken = default)
+        {
+            if (iamClient is null)
+            {
+                throw new ArgumentNullException(nameof(iamClient));
+            }
+
+            Result<AclCheckResponse> response = await iamClient.IsAllowedAccessToTenantResultAsync(
+                new AclCheckRequest
+                {
+                    SubjectIds =
+                    {
+                        subjectId,
+                    },
+                },
+                tenantId,
+                cancellationToken).ConfigureAwait(false);
+
+            if (response.IsError)
+            {
+                return response.Error;
+            }
+
+            return response.Value.SubjectIds.Any(s => string.Equals(s, subjectId, StringComparison.OrdinalIgnoreCase));
+        }
+
+        /// <summary>
+        /// Grants a given subject access rights to the tenant.
+        /// </summary>
+        /// <param name="iamClient">The IamClient to use.</param>
+        /// <param name="tenantId">The tenant id to grant access.</param>
+        /// <param name="subjectId">The subject that requires granted permissions.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>The raw HttpResponseMessage.</returns>
+        public static async Task<Result> GrantAccessToTenantResultAsync(this IIamClient iamClient, Guid tenantId, string subjectId, System.Threading.CancellationToken cancellationToken = default)
+        {
+            if (iamClient is null)
+            {
+                throw new ArgumentNullException(nameof(iamClient));
+            }
+
+            HttpResponseMessage response = await iamClient.GrantAccessToTenantHttpResponseAsync(tenantId, subjectId, cancellationToken).ConfigureAwait(false);
+
+            using (response)
+            {
+                switch (response.StatusCode)
+                {
+                    case HttpStatusCode.OK:
+                        return Result.Default;
+                    case HttpStatusCode.NoContent:
+                        return default;
+                    case HttpStatusCode.BadRequest:
+                    case HttpStatusCode.InternalServerError:
+                        {
+                            ErrorResponse errorResponse = await response.DeserializeJsonContentAsync<ErrorResponse>().ConfigureAwait(false);
+                            return errorResponse.Error;
+                        }
+
+                    default:
+                        return await UnexpectedStatusCodeError.CreateAsync(response, $"{nameof(IIamClient)}.{nameof(GrantAccessToTenantResultAsync)}").ConfigureAwait(false);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Revokes a given subject access rights to the tenant.
+        /// </summary>
+        /// <param name="iamClient">The IamClient to use.</param>
+        /// <param name="tenantId">The tenant id to revoke access.</param>
+        /// <param name="subjectId">The subject that requires revoked permissions.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>The raw HttpResponseMessage.</returns>
+        public static async Task<Result> RemoveAccessToTenantResultAsync(this IIamClient iamClient, Guid tenantId, string subjectId, System.Threading.CancellationToken cancellationToken = default)
+        {
+            if (iamClient is null)
+            {
+                throw new ArgumentNullException(nameof(iamClient));
+            }
+
+            HttpResponseMessage response = await iamClient.RemoveAccessToTenantHttpResponseAsync(tenantId, subjectId, cancellationToken).ConfigureAwait(false);
+
+            using (response)
+            {
+                switch (response.StatusCode)
+                {
+                    case HttpStatusCode.OK:
+                        return Result.Default;
+                    case HttpStatusCode.NoContent:
+                        return default;
+                    case HttpStatusCode.BadRequest:
+                    case HttpStatusCode.InternalServerError:
+                        {
+                            ErrorResponse errorResponse = await response.DeserializeJsonContentAsync<ErrorResponse>().ConfigureAwait(false);
+                            return errorResponse.Error;
+                        }
+
+                    default:
+                        return await UnexpectedStatusCodeError.CreateAsync(response, $"{nameof(IIamClient)}.{nameof(RemoveAccessToTenantResultAsync)}").ConfigureAwait(false);
                 }
             }
         }
