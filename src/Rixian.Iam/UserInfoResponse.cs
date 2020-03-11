@@ -12,43 +12,43 @@ namespace Rixian.Iam
     public class UserInfoResponse
     {
         /// <summary>
-        /// Gets the tenantss that the user can access.
+        /// Gets or sets the tenantss that the user can access.
         /// </summary>
         [JsonProperty("tenants", Required = Required.Default, NullValueHandling = NullValueHandling.Ignore)]
         public IReadOnlyCollection<Tenant> Tenants { get; set; }
 
         /// <summary>
-        /// Gets the subject ID of the user.
+        /// Gets or sets the subject ID of the user.
         /// </summary>
         [JsonProperty("subjectId", Required = Required.Default, NullValueHandling = NullValueHandling.Ignore)]
         public string SubjectId { get; set; }
 
         /// <summary>
-        /// Gets the email of the user.
+        /// Gets or sets the email of the user.
         /// </summary>
         [JsonProperty("email", Required = Required.Default, NullValueHandling = NullValueHandling.Ignore)]
         public string Email { get; set; }
 
         /// <summary>
-        /// Gets a value indicating whether or not the users email has been confirmed.
+        /// Gets or sets a value indicating whether or not the users email has been confirmed.
         /// </summary>
         [JsonProperty("emailConfirmed", Required = Required.Default, NullValueHandling = NullValueHandling.Ignore)]
         public bool EmailConfirmed { get; set; }
 
         /// <summary>
-        /// Gets the username of the user.
+        /// Gets or sets the username of the user.
         /// </summary>
         [JsonProperty("userName", Required = Required.Default, NullValueHandling = NullValueHandling.Ignore)]
         public string Username { get; set; }
 
         /// <summary>
-        /// Gets the phone number of the user.
+        /// Gets or sets the phone number of the user.
         /// </summary>
         [JsonProperty("phone", Required = Required.Default, NullValueHandling = NullValueHandling.Ignore)]
         public string Phone { get; set; }
 
         /// <summary>
-        /// Gets a value indicating whether or not the users phone number has been confirmed.
+        /// Gets or sets a value indicating whether or not the users phone number has been confirmed.
         /// </summary>
         [JsonProperty("phoneConfirmed", Required = Required.Default, NullValueHandling = NullValueHandling.Ignore)]
         public bool PhoneConfirmed { get; set; }
