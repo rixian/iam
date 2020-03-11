@@ -61,6 +61,11 @@ namespace Rixian.Iam
         /// </summary>
         protected IAsyncPolicy<HttpResponseMessage> RemoveAccessToTenantPolicy { get; set; }
 
+        /// <summary>
+        /// Gets or sets the policy for the GetMyDetails http request.
+        /// </summary>
+        protected IAsyncPolicy<HttpResponseMessage> GetMyDetailsPolicy { get; set; }
+
         /// <inheritdoc/>
         public async Task<HttpResponseMessage> GetTenantHttpResponseAsync(Guid tenantId, CancellationToken cancellationToken = default)
         {
@@ -166,6 +171,21 @@ namespace Rixian.Iam
             return response;
         }
 
+        /// <inheritdoc/>
+        public async Task<HttpResponseMessage> GetMyDetailsHttpResponseAsync(string subjectId = null, CancellationToken cancellationToken = default)
+        {
+            IHttpRequestMessageBuilder requestBuilder = UrlBuilder
+                .Create("me")
+                .SetQueryParam("subjectId", subjectId)
+                .ToRequest()
+                .WithHttpMethod().Get()
+                .WithAcceptApplicationJson();
+
+            requestBuilder = await this.PreviewGetMyDetailsAsync(requestBuilder, cancellationToken).ConfigureAwait(false);
+            HttpResponseMessage response = await this.SendRequestWithPolicy(requestBuilder, this.GetMyDetailsPolicy, cancellationToken).ConfigureAwait(false);
+            return response;
+        }
+
         /// <summary>
         /// Optional method for configurings the HttpRequestMessage before sending the call to GetTenant.
         /// </summary>
@@ -239,6 +259,17 @@ namespace Rixian.Iam
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>The updated IHttpRequestMessageBuilder.</returns>
         protected virtual Task<IHttpRequestMessageBuilder> PreviewRemoveAccessToTenantAsync(IHttpRequestMessageBuilder httpRequestMessageBuilder, CancellationToken cancellationToken = default)
+        {
+            return Task.FromResult(httpRequestMessageBuilder);
+        }
+
+        /// <summary>
+        /// Optional method for configurings the HttpRequestMessage before sending the call to GetMyDetails.
+        /// </summary>
+        /// <param name="httpRequestMessageBuilder">The IHttpRequestMessageBuilder.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>The updated IHttpRequestMessageBuilder.</returns>
+        protected virtual Task<IHttpRequestMessageBuilder> PreviewGetMyDetailsAsync(IHttpRequestMessageBuilder httpRequestMessageBuilder, CancellationToken cancellationToken = default)
         {
             return Task.FromResult(httpRequestMessageBuilder);
         }

@@ -63,5 +63,13 @@ namespace Rixian.Iam
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
         Task<HttpResponseMessage> RemoveAccessToTenantHttpResponseAsync(Guid tenantId, string subjectId, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Get information about the currently logged in user.
+        /// </summary>
+        /// <param name="subjectId">Optional user id.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
+        Task<HttpResponseMessage> GetMyDetailsHttpResponseAsync(string subjectId = null, CancellationToken cancellationToken = default);
     }
 }

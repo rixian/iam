@@ -199,5 +199,29 @@ namespace Rixian.Iam
                 throw ApiException.Create(result.Error);
             }
         }
+
+        /// <summary>
+        /// Get information about the currently logged in user.
+        /// </summary>
+        /// <param name="iamClient">The IamClient to use.</param>
+        /// <param name="subjectId">Optional user id.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>The raw HttpResponseMessage.</returns>
+        public static async Task<UserInfoResponse> GetMyDetailsAsync(this IIamClient iamClient, string subjectId, CancellationToken cancellationToken = default)
+        {
+            if (iamClient is null)
+            {
+                throw new ArgumentNullException(nameof(iamClient));
+            }
+
+            Result<UserInfoResponse> result = await iamClient.GetMyDetailsResultAsync(subjectId, cancellationToken).ConfigureAwait(false);
+
+            if (result.IsResult)
+            {
+                return result.Value;
+            }
+
+            throw ApiException.Create(result.Error);
+        }
     }
 }

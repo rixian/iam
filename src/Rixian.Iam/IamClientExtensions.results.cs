@@ -303,5 +303,42 @@ namespace Rixian.Iam
                 }
             }
         }
+
+        /// <summary>
+        /// Get information about the currently logged in user.
+        /// </summary>
+        /// <param name="iamClient">The IamClient to use.</param>
+        /// <param name="subjectId">Optional user id.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>The raw HttpResponseMessage.</returns>
+        public static async Task<Result<UserInfoResponse>> GetMyDetailsResultAsync(this IIamClient iamClient, string subjectId = null, System.Threading.CancellationToken cancellationToken = default)
+        {
+            if (iamClient is null)
+            {
+                throw new ArgumentNullException(nameof(iamClient));
+            }
+
+            HttpResponseMessage response = await iamClient.GetMyDetailsHttpResponseAsync(subjectId, cancellationToken).ConfigureAwait(false);
+
+            using (response)
+            {
+                switch (response.StatusCode)
+                {
+                    case HttpStatusCode.OK:
+                        return await response.DeserializeJsonContentAsync<UserInfoResponse>().ConfigureAwait(false);
+                    case HttpStatusCode.NoContent:
+                        return default;
+                    case HttpStatusCode.BadRequest:
+                    case HttpStatusCode.InternalServerError:
+                        {
+                            ErrorResponse errorResponse = await response.DeserializeJsonContentAsync<ErrorResponse>().ConfigureAwait(false);
+                            return errorResponse.Error;
+                        }
+
+                    default:
+                        return await UnexpectedStatusCodeError.CreateAsync(response, $"{nameof(IIamClient)}.{nameof(RemoveAccessToTenantResultAsync)}").ConfigureAwait(false);
+                }
+            }
+        }
     }
 }
