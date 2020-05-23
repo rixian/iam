@@ -31,7 +31,7 @@ namespace Rixian.Iam
 
             Result<ICollection<Tenant>> result = await iamClient.ListTenantsResultAsync(subjectId, cancellationToken).ConfigureAwait(false);
 
-            if (result.IsResult)
+            if (result.IsSuccess)
             {
                 return result.Value;
             }
@@ -53,7 +53,7 @@ namespace Rixian.Iam
 
             Result<Tenant> result = await iamClient.CreateTenantResultAsync(request, cancellationToken).ConfigureAwait(false);
 
-            if (result.IsResult)
+            if (result.IsSuccess)
             {
                 return result.Value;
             }
@@ -75,7 +75,7 @@ namespace Rixian.Iam
 
             Result<Tenant> result = await iamClient.GetTenantResultAsync(tenantId, cancellationToken).ConfigureAwait(false);
 
-            if (result.IsResult)
+            if (result.IsSuccess)
             {
                 return result.Value;
             }
@@ -96,7 +96,7 @@ namespace Rixian.Iam
 
             Result<object> result = await iamClient.ListAccountsResultAsync(cancellationToken).ConfigureAwait(false);
 
-            if (result.IsResult)
+            if (result.IsSuccess)
             {
                 return result.Value;
             }
@@ -121,7 +121,7 @@ namespace Rixian.Iam
 
             Result<AclCheckResponse> result = await iamClient.IsAllowedAccessToTenantResultAsync(request, tenantId, cancellationToken).ConfigureAwait(false);
 
-            if (result.IsResult)
+            if (result.IsSuccess)
             {
                 return result.Value;
             }
@@ -146,7 +146,7 @@ namespace Rixian.Iam
 
             Result<bool> result = await iamClient.IsAllowedAccessToTenantResultAsync(tenantId, subjectId, cancellationToken).ConfigureAwait(false);
 
-            if (result.IsResult)
+            if (result.IsSuccess)
             {
                 return result.Value;
             }
@@ -171,7 +171,7 @@ namespace Rixian.Iam
 
             Result result = await iamClient.GrantAccessToTenantResultAsync(tenantId, subjectId, cancellationToken).ConfigureAwait(false);
 
-            if (result.IsError)
+            if (result.IsFail)
             {
                 throw ApiException.Create(result.Error);
             }
@@ -194,7 +194,7 @@ namespace Rixian.Iam
 
             Result result = await iamClient.RemoveAccessToTenantResultAsync(tenantId, subjectId, cancellationToken).ConfigureAwait(false);
 
-            if (result.IsError)
+            if (result.IsFail)
             {
                 throw ApiException.Create(result.Error);
             }
@@ -216,7 +216,7 @@ namespace Rixian.Iam
 
             Result<UserInfoResponse> result = await iamClient.GetMyDetailsResultAsync(subjectId, cancellationToken).ConfigureAwait(false);
 
-            if (result.IsResult)
+            if (result.IsSuccess)
             {
                 return result.Value;
             }

@@ -11,6 +11,7 @@ namespace Rixian.Iam
     using System.Threading.Tasks;
     using Rixian.Extensions.Errors;
     using Rixian.Extensions.Http.Client;
+    using static Rixian.Extensions.Errors.Prelude;
 
     /// <summary>
     /// Extensions for the Rixian IAM api client.
@@ -36,18 +37,21 @@ namespace Rixian.Iam
                 switch (response.StatusCode)
                 {
                     case HttpStatusCode.OK:
-                        return Result.Create(await response.DeserializeJsonContentAsync<ICollection<Tenant>>().ConfigureAwait(false));
+                        return Result(await response.DeserializeJsonContentAsync<ICollection<Tenant>>().ConfigureAwait(false));
                     case HttpStatusCode.NoContent:
                         return default;
                     case HttpStatusCode.BadRequest:
                     case HttpStatusCode.InternalServerError:
                         {
                             ErrorResponse errorResponse = await response.DeserializeJsonContentAsync<ErrorResponse>().ConfigureAwait(false);
-                            return errorResponse.Error;
+                            return ErrorResult<ICollection<Tenant>>(errorResponse.Error);
                         }
 
                     default:
-                        return await UnexpectedStatusCodeError.CreateAsync(response, $"{nameof(IIamClient)}.{nameof(ListTenantsResultAsync)}").ConfigureAwait(false);
+                        {
+                            UnexpectedStatusCodeError error = await UnexpectedStatusCodeError.CreateAsync(response, $"{nameof(IIamClient)}.{nameof(ListTenantsResultAsync)}").ConfigureAwait(false);
+                            return ErrorResult<ICollection<Tenant>>(error);
+                        }
                 }
             }
         }
@@ -78,11 +82,14 @@ namespace Rixian.Iam
                     case HttpStatusCode.InternalServerError:
                         {
                             ErrorResponse errorResponse = await response.DeserializeJsonContentAsync<ErrorResponse>().ConfigureAwait(false);
-                            return errorResponse.Error;
+                            return ErrorResult<Tenant>(errorResponse.Error);
                         }
 
                     default:
-                        return await UnexpectedStatusCodeError.CreateAsync(response, $"{nameof(IIamClient)}.{nameof(CreateTenantResultAsync)}").ConfigureAwait(false);
+                        {
+                            UnexpectedStatusCodeError error = await UnexpectedStatusCodeError.CreateAsync(response, $"{nameof(IIamClient)}.{nameof(CreateTenantResultAsync)}").ConfigureAwait(false);
+                            return ErrorResult<Tenant>(error);
+                        }
                 }
             }
         }
@@ -113,11 +120,14 @@ namespace Rixian.Iam
                     case HttpStatusCode.InternalServerError:
                         {
                             ErrorResponse errorResponse = await response.DeserializeJsonContentAsync<ErrorResponse>().ConfigureAwait(false);
-                            return errorResponse.Error;
+                            return ErrorResult<Tenant>(errorResponse.Error);
                         }
 
                     default:
-                        return await UnexpectedStatusCodeError.CreateAsync(response, $"{nameof(IIamClient)}.{nameof(GetTenantResultAsync)}").ConfigureAwait(false);
+                        {
+                            UnexpectedStatusCodeError error = await UnexpectedStatusCodeError.CreateAsync(response, $"{nameof(IIamClient)}.{nameof(GetTenantResultAsync)}").ConfigureAwait(false);
+                            return ErrorResult<Tenant>(error);
+                        }
                 }
             }
         }
@@ -147,11 +157,14 @@ namespace Rixian.Iam
                     case HttpStatusCode.InternalServerError:
                         {
                             ErrorResponse errorResponse = await response.DeserializeJsonContentAsync<ErrorResponse>().ConfigureAwait(false);
-                            return errorResponse.Error;
+                            return ErrorResult<object>(errorResponse.Error);
                         }
 
                     default:
-                        return await UnexpectedStatusCodeError.CreateAsync(response, $"{nameof(IIamClient)}.{nameof(ListAccountsResultAsync)}").ConfigureAwait(false);
+                        {
+                            UnexpectedStatusCodeError error = await UnexpectedStatusCodeError.CreateAsync(response, $"{nameof(IIamClient)}.{nameof(ListAccountsResultAsync)}").ConfigureAwait(false);
+                            return ErrorResult<object>(error);
+                        }
                 }
             }
         }
@@ -185,11 +198,14 @@ namespace Rixian.Iam
                     case HttpStatusCode.InternalServerError:
                         {
                             ErrorResponse errorResponse = await response.DeserializeJsonContentAsync<ErrorResponse>().ConfigureAwait(false);
-                            return errorResponse.Error;
+                            return ErrorResult<AclCheckResponse>(errorResponse.Error);
                         }
 
                     default:
-                        return await UnexpectedStatusCodeError.CreateAsync(response, $"{nameof(IIamClient)}.{nameof(IsAllowedAccessToTenantResultAsync)}").ConfigureAwait(false);
+                        {
+                            UnexpectedStatusCodeError error = await UnexpectedStatusCodeError.CreateAsync(response, $"{nameof(IIamClient)}.{nameof(IsAllowedAccessToTenantResultAsync)}").ConfigureAwait(false);
+                            return ErrorResult<AclCheckResponse>(error);
+                        }
                 }
             }
         }
@@ -220,9 +236,9 @@ namespace Rixian.Iam
                 tenantId,
                 cancellationToken).ConfigureAwait(false);
 
-            if (response.IsError)
+            if (response.IsFail)
             {
-                return response.Error;
+                return ErrorResult<bool>(response.Error);
             }
 
             return response.Value.SubjectIds.Any(s => string.Equals(s, subjectId, StringComparison.OrdinalIgnoreCase));
@@ -250,18 +266,21 @@ namespace Rixian.Iam
                 switch (response.StatusCode)
                 {
                     case HttpStatusCode.OK:
-                        return Result.Default;
+                        return DefaultResult;
                     case HttpStatusCode.NoContent:
                         return default;
                     case HttpStatusCode.BadRequest:
                     case HttpStatusCode.InternalServerError:
                         {
                             ErrorResponse errorResponse = await response.DeserializeJsonContentAsync<ErrorResponse>().ConfigureAwait(false);
-                            return errorResponse.Error;
+                            return ErrorResult(errorResponse.Error);
                         }
 
                     default:
-                        return await UnexpectedStatusCodeError.CreateAsync(response, $"{nameof(IIamClient)}.{nameof(GrantAccessToTenantResultAsync)}").ConfigureAwait(false);
+                        {
+                            UnexpectedStatusCodeError error = await UnexpectedStatusCodeError.CreateAsync(response, $"{nameof(IIamClient)}.{nameof(GrantAccessToTenantResultAsync)}").ConfigureAwait(false);
+                            return ErrorResult(error);
+                        }
                 }
             }
         }
@@ -288,18 +307,21 @@ namespace Rixian.Iam
                 switch (response.StatusCode)
                 {
                     case HttpStatusCode.OK:
-                        return Result.Default;
+                        return DefaultResult;
                     case HttpStatusCode.NoContent:
                         return default;
                     case HttpStatusCode.BadRequest:
                     case HttpStatusCode.InternalServerError:
                         {
                             ErrorResponse errorResponse = await response.DeserializeJsonContentAsync<ErrorResponse>().ConfigureAwait(false);
-                            return errorResponse.Error;
+                            return ErrorResult(errorResponse.Error);
                         }
 
                     default:
-                        return await UnexpectedStatusCodeError.CreateAsync(response, $"{nameof(IIamClient)}.{nameof(RemoveAccessToTenantResultAsync)}").ConfigureAwait(false);
+                        {
+                            UnexpectedStatusCodeError error = await UnexpectedStatusCodeError.CreateAsync(response, $"{nameof(IIamClient)}.{nameof(RemoveAccessToTenantResultAsync)}").ConfigureAwait(false);
+                            return ErrorResult(error);
+                        }
                 }
             }
         }
@@ -332,11 +354,14 @@ namespace Rixian.Iam
                     case HttpStatusCode.InternalServerError:
                         {
                             ErrorResponse errorResponse = await response.DeserializeJsonContentAsync<ErrorResponse>().ConfigureAwait(false);
-                            return errorResponse.Error;
+                            return ErrorResult<UserInfoResponse>(errorResponse.Error);
                         }
 
                     default:
-                        return await UnexpectedStatusCodeError.CreateAsync(response, $"{nameof(IIamClient)}.{nameof(RemoveAccessToTenantResultAsync)}").ConfigureAwait(false);
+                        {
+                            UnexpectedStatusCodeError error = await UnexpectedStatusCodeError.CreateAsync(response, $"{nameof(IIamClient)}.{nameof(RemoveAccessToTenantResultAsync)}").ConfigureAwait(false);
+                            return ErrorResult<UserInfoResponse>(error);
+                        }
                 }
             }
         }
