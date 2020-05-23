@@ -38,8 +38,8 @@ namespace Microsoft.Extensions.DependencyInjection
 
             // Configure the ITokenClient to use the previous HttpClient.
             serviceCollection
-                .AddTokenClient(IamClientOptions.IamTokenClientName, options.TokenClientOptions)
-                .UseHttpClient(IamClientOptions.IamTokenClientHttpClientName);
+                .AddClientCredentialsTokenClient(IamClientOptions.IamTokenClientName, options.TokenClientOptions)
+                .UseHttpClientForBackchannel(IamClientOptions.IamTokenClientHttpClientName);
 
             // Configure the HttpClient with the ITokenClient for inserting tokens into the header.
             IHttpClientBuilder httpClientBuilder = serviceCollection
